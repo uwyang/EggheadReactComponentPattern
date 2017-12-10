@@ -1,14 +1,22 @@
 import React, { Component } from "react";
-import { Toggle, MyToggle } from "./toggle";
+import { Toggle, MyToggleWrapper } from "./toggle";
 import { MyEventComponent } from "./event";
+
+//ref is referring to wrapper, not the myToggle button. s
+//  <MyToggleWrapper ref ={myToggle => this.myToggle = MyToggle}/>
+
+
 
 export default class App extends Component {
   render() {
     return (
       <div>
         Toggle:
-        <Toggle onToggle={on => console.log("Toggle on: ", on)}>
-          <MyToggle />
+        <Toggle onToggle={on => {
+          console.log("Toggle on: ", on);
+          on?(this.myToggleButton&&this.myToggleButton.focus()):null;
+        }}>
+          <MyToggleWrapper innerRef ={myToggleButton => this.myToggleButton = myToggle}/>
           <hr />
           <Toggle.Button />
           <hr />
@@ -24,3 +32,6 @@ export default class App extends Component {
     );
   }
 }
+
+//for react viwer.
+App.displayName = "MyFuckingApp";

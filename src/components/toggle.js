@@ -23,22 +23,26 @@ function toggleFct() {
   );
 }
 
-
 const TOGGLE_CONTEXT = "__toggle__";
-const ToggleOn = withToggle(({ children, toggleContext:{on} }) => {
+const ToggleOn = withToggle(({ children, toggleContext: { on } }) => {
   console.log("static on:", children.render);
   return on ? children : null;
   //return children;
 });
 
-const ToggleOff = withToggle(({ children, toggleContext:{on} }) => {
+const ToggleOff = withToggle(({ children, toggleContext: { on } }) => {
   return on ? null : children;
 });
+ToggleOff.displayName="ToggleOff";
 
-const ToggleButton = withToggle(({ toggleContext:{on, toggle}, ...props }) => {
-  console.log("ToggleButton");
-  return <Switch on={on} onClick={toggle} {...props} />;
-});
+const ToggleButton = withToggle(
+  ({ toggleContext: { on, toggle }, ...props }) => {
+    console.log("ToggleButton");
+    return <Switch on={on} onClick={toggle} {...props} />;
+  }
+);
+ToggleButton.displayName="ToggleButton";
+
 
 export class Toggle extends React.Component {
   static defaultProps = { onToggle: () => {} };
@@ -58,7 +62,7 @@ export class Toggle extends React.Component {
     return {
       [TOGGLE_CONTEXT]: {
         on: this.state.on,
-        toggle: toggleFct.bind(this),
+        toggle: toggleFct.bind(this)
       }
     };
   }
@@ -68,27 +72,35 @@ export class Toggle extends React.Component {
   }
 }
 
-
 //turn this into a factory.
 //let you get rid of contextTypes for ToggleOn, ToggleOff, etc.
 function withToggle(Component) {
   //console.log("withToggle: ", Component);
-  function Wrapper(props, context) {
+  function Wrapper({innerRef, ...props}, context) {
     //const {on, toggle} = context[TOGGLE_CONTEXT];
     const toggleContext = context[TOGGLE_CONTEXT];
+    console.log("innerRef: ", innerRef);
     console.log("Wrapper toggle Context: ", toggleContext);
     //console.log("Wrapper toggle props: ", props);
-    return <Component toggleContext={toggleContext} {...props} />;
+    //Stateless functions could not be given refs even in React 15.
+    //Try converting your function component into a class component.
+    // so ref={innerRef} doesn't work. 
+    return <Component  toggleContext={toggleContext} {...props} />;
   }
   Wrapper.contextTypes = {
     [TOGGLE_CONTEXT]: PropTypes.object.isRequired
   };
+  Wrapper.displayName=`withToggle(${Component.displayName})`;
   return Wrapper;
 }
 
-export const MyToggle = withToggle(({ toggleContext: {on, toggle} }) => {
+//inline, will not make displayName automatically.
+const MyToggle = ({ toggleContext: { on, toggle } }) => {
   console.log("myToggle, toggleContext on: ", on);
   return <button onClick={toggle}>{on ? "on" : "off"}</button>;
-});
+};
+MyToggle.displayName="MyToggle";
+
+export const MyToggleWrapper = withToggle(MyToggle);
 
 export { withToggle, toggleFct };
