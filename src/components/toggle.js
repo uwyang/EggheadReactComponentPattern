@@ -13,20 +13,30 @@ https://javascriptplayground.com/blog/2017/02/context-in-reactjs-applications/
 //contextTypes: what it needs
 //childContextTypes: what it's giving the children.
 
+function toggleFct() {
+  console.log("toggle fct called. ");
+  return this.setState(
+    ({ on }) => ({ on: !on }),
+    () => {
+      this.props.onToggle(this.state.on);
+    }
+  );
+}
+
+
 const TOGGLE_CONTEXT = "__toggle__";
-const ToggleOn = withToggle(({ children , on}) => {
-  //console.log("static on:", children.render);
+const ToggleOn = withToggle(({ children, toggleContext:{on} }) => {
+  console.log("static on:", children.render);
   return on ? children : null;
   //return children;
 });
 
-const ToggleOff = withToggle(({ children , on})=> {
+const ToggleOff = withToggle(({ children, toggleContext:{on} }) => {
   return on ? null : children;
 });
 
-
-const ToggleButton = withToggle(({on, toggle, ...props}) =>{
-  //console.log("ToggleButton");
+const ToggleButton = withToggle(({ toggleContext:{on, toggle}, ...props }) => {
+  console.log("ToggleButton");
   return <Switch on={on} onClick={toggle} {...props} />;
 });
 
@@ -48,25 +58,16 @@ export class Toggle extends React.Component {
     return {
       [TOGGLE_CONTEXT]: {
         on: this.state.on,
-        toggle: this.toggle
+        toggle: toggleFct.bind(this),
       }
     };
   }
-
-  toggle = () => {
-    console.log("toggle fct called. ");
-    return this.setState(
-      ({ on }) => ({ on: !on }),
-      () => {
-        this.props.onToggle(this.state.on);
-      }
-    );
-  };
 
   render() {
     return <div>{this.props && this.props.children}</div>;
   }
 }
+
 
 //turn this into a factory.
 //let you get rid of contextTypes for ToggleOn, ToggleOff, etc.
@@ -75,9 +76,9 @@ function withToggle(Component) {
   function Wrapper(props, context) {
     //const {on, toggle} = context[TOGGLE_CONTEXT];
     const toggleContext = context[TOGGLE_CONTEXT];
-    //console.log("Wrapper toggle Context: ", toggleContext);
+    console.log("Wrapper toggle Context: ", toggleContext);
     //console.log("Wrapper toggle props: ", props);
-    return <Component {...toggleContext} {...props} />;
+    return <Component toggleContext={toggleContext} {...props} />;
   }
   Wrapper.contextTypes = {
     [TOGGLE_CONTEXT]: PropTypes.object.isRequired
@@ -85,7 +86,9 @@ function withToggle(Component) {
   return Wrapper;
 }
 
-export const MyToggle = withToggle(({ on, toggle }) => {
-  //console.log("myToggle, toggle: ", toggle);
+export const MyToggle = withToggle(({ toggleContext: {on, toggle} }) => {
+  console.log("myToggle, toggleContext on: ", on);
   return <button onClick={toggle}>{on ? "on" : "off"}</button>;
 });
+
+export { withToggle, toggleFct };
