@@ -14,34 +14,21 @@ https://javascriptplayground.com/blog/2017/02/context-in-reactjs-applications/
 //childContextTypes: what it's giving the children.
 
 const TOGGLE_CONTEXT = "__toggle__";
-function ToggleOn({ children }, context) {
-  const { on } = context[TOGGLE_CONTEXT];
+const ToggleOn = withToggle(({ children , on}) => {
   //console.log("static on:", children.render);
   return on ? children : null;
   //return children;
-}
-ToggleOn.contextTypes = {
-  [TOGGLE_CONTEXT]: PropTypes.object.isRequired
-};
+});
 
-function ToggleOff({ children }, context) {
-  const { on } = context[TOGGLE_CONTEXT];
+const ToggleOff = withToggle(({ children , on})=> {
   return on ? null : children;
-}
-ToggleOff.contextTypes = {
-  [TOGGLE_CONTEXT]: PropTypes.object.isRequired
-};
+});
 
 
-function ToggleButton(props, context){
-  console.log("make Button); ");
-  const {on, toggle} = context[TOGGLE_CONTEXT];
+const ToggleButton = withToggle(({on, toggle, ...props}) =>{
+  //console.log("ToggleButton");
   return <Switch on={on} onClick={toggle} {...props} />;
-};
-ToggleButton.contextTypes= {
-  [TOGGLE_CONTEXT]: PropTypes.object.isRequired,
-};
-
+});
 
 export class Toggle extends React.Component {
   static defaultProps = { onToggle: () => {} };
@@ -82,12 +69,14 @@ export class Toggle extends React.Component {
 }
 
 //turn this into a factory.
+//let you get rid of contextTypes for ToggleOn, ToggleOff, etc.
 function withToggle(Component) {
   //console.log("withToggle: ", Component);
   function Wrapper(props, context) {
     //const {on, toggle} = context[TOGGLE_CONTEXT];
     const toggleContext = context[TOGGLE_CONTEXT];
-    console.log("Wrapper toggleContext: ", toggleContext);
+    //console.log("Wrapper toggle Context: ", toggleContext);
+    //console.log("Wrapper toggle props: ", props);
     return <Component {...toggleContext} {...props} />;
   }
   Wrapper.contextTypes = {
