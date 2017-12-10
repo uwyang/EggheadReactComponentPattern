@@ -32,13 +32,24 @@ ToggleOff.contextTypes = {
   [TOGGLE_CONTEXT]: PropTypes.object.isRequired
 };
 
+
+function ToggleButton(props, context){
+  console.log("make Button); ");
+  const {on, toggle} = context[TOGGLE_CONTEXT];
+  return <Switch on={on} onClick={toggle} {...props} />;
+};
+ToggleButton.contextTypes= {
+  [TOGGLE_CONTEXT]: PropTypes.object.isRequired,
+};
+
+
 export class Toggle extends React.Component {
   static defaultProps = { onToggle: () => {} };
   state = { on: false };
   static On = ToggleOn;
 
   static Off = ToggleOff;
-  //static Button = ToggleButton;
+  static Button = ToggleButton;
 
   static childContextTypes = {
     [TOGGLE_CONTEXT]: PropTypes.object.isRequired
@@ -72,11 +83,11 @@ export class Toggle extends React.Component {
 
 //turn this into a factory.
 function withToggle(Component) {
-  console.log("withToggle: ", Component);
+  //console.log("withToggle: ", Component);
   function Wrapper(props, context) {
     //const {on, toggle} = context[TOGGLE_CONTEXT];
     const toggleContext = context[TOGGLE_CONTEXT];
-    console.log("toggleContext: ", toggleContext);
+    console.log("Wrapper toggleContext: ", toggleContext);
     return <Component {...toggleContext} {...props} />;
   }
   Wrapper.contextTypes = {
@@ -86,6 +97,6 @@ function withToggle(Component) {
 }
 
 export const MyToggle = withToggle(({ on, toggle }) => {
-  console.log("myToggle, toggle: ", toggle);
+  //console.log("myToggle, toggle: ", toggle);
   return <button onClick={toggle}>{on ? "on" : "off"}</button>;
 });

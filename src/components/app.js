@@ -9,6 +9,8 @@ export default class App extends Component {
         <Toggle onToggle={on => console.log("Toggle on: ", on)}>
           <Toggle.On>The button is on</Toggle.On>
           <MyToggle/>
+          <hr/>
+          <Toggle.Button/>
           <div>
             <Toggle.Off>The button is off</Toggle.Off>
           </div>
