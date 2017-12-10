@@ -10,7 +10,6 @@ https://javascriptplayground.com/blog/2017/02/context-in-reactjs-applications/
 
 */
 
-
 //contextTypes: what it needs
 //childContextTypes: what it's giving the children.
 
@@ -33,14 +32,7 @@ ToggleOff.contextTypes= {
   [TOGGLE_CONTEXT]: PropTypes.object.isRequired,
 };
 
-function ToggleButton(props, context){
-  console.log("make Button); ");
-  const {on, toggle} = context[TOGGLE_CONTEXT];
-  return <Switch on={on} onClick={toggle} {...props} />;
-};
-ToggleButton.contextTypes= {
-  [TOGGLE_CONTEXT]: PropTypes.object.isRequired,
-};
+
 
 export default class Toggle extends React.Component {
   static defaultProps = { onToggle: () => {} };
@@ -75,9 +67,17 @@ export default class Toggle extends React.Component {
   }
 
   render() {
-    console.log(this.props.children);
-    //const { on } = this.state;
-    //return (<Switch on={on} onClick={this.toggle}/>);
-    return <div>{this.props&&this.props.children}</div>;
+    return <div>{this.props && this.props.children}</div>;
   }
+}
+
+function withToggle(Component){
+  function Wrapper(props, context){
+    console.log("make Button); ");
+    const {on, toggle} = context[TOGGLE_CONTEXT];
+    return <Switch on={on} onClick={toggle} {...props} />;
+  };
+  ToggleButton.contextTypes= {
+    [TOGGLE_CONTEXT]: PropTypes.object.isRequired,
+  };
 }
