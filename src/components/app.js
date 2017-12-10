@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Toggle from "./toggle";
+import {Toggle, MyToggle} from "./toggle";
 
 export default class App extends Component {
   render() {
@@ -8,7 +8,7 @@ export default class App extends Component {
         Toggle:
         <Toggle onToggle={on => console.log("Toggle on: ", on)}>
           <Toggle.On>The button is on</Toggle.On>
-          <Toggle.Button />
+          <MyToggle/>
           <div>
             <Toggle.Off>The button is off</Toggle.Off>
           </div>
