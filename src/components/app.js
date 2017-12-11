@@ -18,6 +18,7 @@ export default class App extends Component {
           on?this.myToggleButton.focus():null;
         }}>
           <MyToggleWrapper innerRef ={ref => {this.myToggleButton = ref}}/>
+          <MyToggleWrapper.ToggleMessage/>
           <hr />
           <Toggle.Button />
           <hr />

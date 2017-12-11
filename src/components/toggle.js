@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { render } from "react-dom";
 import Switch from "react-toggle-switch";
 import PropTypes from "prop-types";
+import hoistNonReactStatic from 'hoist-non-react-statics';
 
 /*
 //why we need context:
@@ -92,7 +93,8 @@ function withToggle(Component) {
   };
   Wrapper.displayName=`withToggle(${Component.displayName})`;
   Wrapper.WrappedComponent = Component;
-  return Wrapper;
+  return hoistNonReactStatic(Wrapper, Component);
+  //return Wrapper;
 }
 
 //inline, will not make displayName automatically.
@@ -102,7 +104,7 @@ class MyToggle extends React.Component{
     ({toggleContext: {on}})=> {
       return on?'warnning: on!': null;
     }
-  )
+  );
   render(){
   const { toggleContext: { on, toggle }, innerRef } = this.props;
   console.log("myToggle, toggleContext on: ", on);
