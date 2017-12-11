@@ -84,23 +84,57 @@ function withToggle(Component) {
     //console.log("Wrapper toggle props: ", props);
     //Stateless functions could not be given refs even in React 15.
     //Try converting your function component into a class component.
-    // so ref={innerRef} doesn't work. 
-    return <Component  toggleContext={toggleContext} {...props} />;
+    // so ref={innerRef} doesn't work.
+    return <Component innerRef={innerRef} toggleContext={toggleContext} {...props} />;
   }
   Wrapper.contextTypes = {
     [TOGGLE_CONTEXT]: PropTypes.object.isRequired
   };
   Wrapper.displayName=`withToggle(${Component.displayName})`;
+  Wrapper.WrappedComponent = Component;
   return Wrapper;
 }
 
 //inline, will not make displayName automatically.
-const MyToggle = ({ toggleContext: { on, toggle } }) => {
+class MyToggle extends React.Component{
+  static displayName="MyToggle";
+  static ToggleMessage = withToggle(
+    ({toggleContext: {on}})=> {
+      return on?'warnning: on!': null;
+    }
+  )
+  render(){
+  const { toggleContext: { on, toggle }, innerRef } = this.props;
   console.log("myToggle, toggleContext on: ", on);
-  return <button onClick={toggle}>{on ? "on" : "off"}</button>;
+  return <button onClick={toggle} ref={innerRef}>{on ? "on" : "off"}</button>;
+}
 };
-MyToggle.displayName="MyToggle";
+
 
 export const MyToggleWrapper = withToggle(MyToggle);
+
+function test(){
+  console.log("teststart");
+  const div = document.createElement('div');
+  document.body.appendChild('div');
+  const toggle = ()=> (toggle.called = true);
+  ReactDOM.render(
+    <MyToggleWrapper.WrappedComponent
+      toggle = {{on:true, toggle}}>
+    </MyToggleWrapper.WrappedComponent>
+  );
+  if(!div.innerHTML.includes('on')){
+    throw new Error(
+      `Contents are wrong: ${div.innerHTML}`
+    )
+  }
+  const button = div.getElementByTagName('button')[0];
+  button.click();
+  if(!toggle.clalled){
+    throw new Error('toggle not called!');
+  }
+}
+
+export {test};
 
 export { withToggle, toggleFct };

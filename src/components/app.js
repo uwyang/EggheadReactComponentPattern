@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Toggle, MyToggleWrapper } from "./toggle";
+import { Toggle, MyToggleWrapper} from "./toggle";
 import { MyEventComponent } from "./event";
+
+
 
 //ref is referring to wrapper, not the myToggle button. s
 //  <MyToggleWrapper ref ={myToggle => this.myToggle = MyToggle}/>
-
-
 
 export default class App extends Component {
   render() {
@@ -14,9 +14,10 @@ export default class App extends Component {
         Toggle:
         <Toggle onToggle={on => {
           console.log("Toggle on: ", on);
-          on?(this.myToggleButton&&this.myToggleButton.focus()):null;
+          console.log(this.myToggleButton);
+          on?this.myToggleButton.focus():null;
         }}>
-          <MyToggleWrapper innerRef ={myToggleButton => this.myToggleButton = myToggle}/>
+          <MyToggleWrapper innerRef ={ref => {this.myToggleButton = ref}}/>
           <hr />
           <Toggle.Button />
           <hr />
@@ -28,6 +29,12 @@ export default class App extends Component {
           <MyEventComponent event="onClick" on={e => alert(e.type)} />
 
         </Toggle>
+        <button ref={(ref)=> {this.refButton=ref}} onClick={()=>{
+          console.log("refButton");
+          console.log(this.refButton);
+        }}>
+          OH, ref
+        </button>
       </div>
     );
   }
